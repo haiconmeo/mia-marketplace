@@ -27,13 +27,6 @@ const Description = ({ info }) => {
             >
               Discover more
             </button>
-            <button
-              aria-hidden="true"
-              onClick={() => handleClick('/upload-details')}
-              className={cn('button', styles.button)}
-            >
-              Create item
-            </button>
           </div>
         </div>
         <div className={styles.gallery}>
