@@ -61,7 +61,6 @@ const Home = ({
         type={categoriesGroup['type']}
       />
       <Selection info={categoriesGroup['groups']} type={categoryTypes} />
-      <Intro info={chooseBySlug(landing, 'introduction')} />
       <Partners info={reviews} />
       <Discover
         info={categoriesGroup['groups']}

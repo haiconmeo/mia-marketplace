@@ -142,9 +142,9 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
   return (
     <Layout navigationPaths={navigationItems[0]?.metadata}>
       <PageMeta
-        title={'Discover | uNFT Marketplace'}
+        title={'Discover | Mia space'}
         description={
-          'uNFT Marketplace built with Cosmic CMS, Next.js, and the Stripe API'
+          'Không gian tâm linh Phật giáo'
         }
       />
       <div className={cn('section-pt80', styles.section)}>
@@ -155,7 +155,7 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
                 <div className={styles.title}>Search</div>
               </div>
               <div className={styles.form}>
-                <div className={styles.label}>Search keyword</div>
+                <div className={styles.label}>Tìm kiếm</div>
                 <form
                   className={styles.search}
                   action=""

@@ -26,8 +26,8 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
 
   const counts = itemInfo?.[0]?.metadata?.count
     ? Array(itemInfo[0]?.metadata?.count)
-        .fill(1)
-        .map((_, index) => index + 1)
+      .fill(1)
+      .map((_, index) => index + 1)
     : ['Not Available']
   const [option, setOption] = useState(counts[0])
 
@@ -130,12 +130,23 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
                 />
               </div>
               <div className={styles.btns}>
-                <button
-                  className={cn('button', styles.button)}
-                  onClick={handleAddToCart}
-                >
-                  Buy Now
-                </button>
+                {
+                  itemInfo[0]?.metadata?.price > 0 ? (
+                    <button
+                      className={cn('button', styles.button)}
+                      onClick={handleAddToCart}
+                    >
+                      Mua ngay
+                    </button>
+                  ) : (
+                    <button
+                      className={cn('button', styles.button)}
+                      onClick={() => window.open(itemInfo[0]?.metadata?.link, '_blank')}
+                    >
+                      Tải xuống
+                    </button>
+                  )
+                }
               </div>
             </div>
           </div>

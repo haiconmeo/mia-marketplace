@@ -3,7 +3,6 @@ import cn from 'classnames'
 import AppLink from '../AppLink'
 import Icon from '../Icon'
 import Image from 'next/image'
-import User from './User'
 import Theme from '../Theme'
 import Modal from '../Modal'
 import OAuth from '../OAuth'
@@ -83,20 +82,8 @@ const Headers = ({ navigation }) => {
             href={`/search`}
           >
             <Icon name="search" size="20" />
-            Search
+            Tìm kiếm
           </AppLink>
-          {cosmicUser?.['id'] ? (
-            <User className={styles.user} user={cosmicUser} />
-          ) : (
-            <button
-              aria-label="login"
-              aria-hidden="true"
-              className={cn('button-small', styles.button, styles.login)}
-              onClick={() => setVisibleAuthModal(true)}
-            >
-              Login
-            </button>
-          )}
           <button
             aria-label="user-information"
             aria-hidden="true"

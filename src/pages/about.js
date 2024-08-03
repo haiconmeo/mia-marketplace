@@ -22,9 +22,9 @@ const AboutUs = ({ navigationItems, landing }) => {
   return (
     <Layout navigationPaths={navigationItems[0]?.metadata}>
       <PageMeta
-        title={'About | uNFT Marketplace'}
+        title={'About | Mia space'}
         description={
-          'uNFT Marketplace built with Cosmic CMS, Next.js, and the Stripe API'
+          'Không gian tâm linh Phật giáo'
         }
       />
       <div className={cn('section', styles.section)}>

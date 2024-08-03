@@ -31,9 +31,9 @@ const Layout = ({ children, title, navigationPaths }) => {
     <>
       <Meta />
       <PageMeta
-        title={'uNFT Marketplace'}
+        title={'Mia space'}
         description={
-          'uNFT Marketplace built with Cosmic CMS, Next.js, and the Stripe API'
+          'Không gian tâm linh Phật giáo'
         }
       />
       <div className={styles.page}>

@@ -163,9 +163,9 @@ const Upload = ({ navigationItems, categoriesType }) => {
   return (
     <Layout navigationPaths={navigationItems[0]?.metadata || navigation}>
       <PageMeta
-        title={'Create Item | uNFT Marketplace'}
+        title={'Create Item | Mia space'}
         description={
-          'uNFT Marketplace built with Cosmic CMS, Next.js, and the Stripe API'
+          'Không gian tâm linh Phật giáo'
         }
       />
       <div className={cn('section', styles.section)}>
