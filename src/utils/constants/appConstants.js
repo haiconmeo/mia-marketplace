@@ -1,4 +1,4 @@
-const OPTIONS = ['Any color', 'Red', 'Blue', 'Black', 'Purple']
+const OPTIONS = ['Nguyên thuỷ', 'Đại thừa', 'Mật tông']
 
 const STEP = 1
 const MIN = 1

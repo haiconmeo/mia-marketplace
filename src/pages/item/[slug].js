@@ -1,27 +1,53 @@
 import React, { useState, useCallback } from 'react'
 import cn from 'classnames'
-import toast from 'react-hot-toast'
 import { useStateContext } from '../../utils/context/StateContext'
 import Layout from '../../components/Layout'
 import HotBid from '../../components/HotBid'
 import Discover from '../../screens/Home/Discover'
-import Dropdown from '../../components/Dropdown'
 import Modal from '../../components/Modal'
 import OAuth from '../../components/OAuth'
 import Image from '../../components/Image'
 import {
-  getDataBySlug,
   getAllDataByType,
-  getDataByCategory,
 } from '../../lib/cosmic'
-import getStripe from '../../lib/getStripe'
-
+import {getDataByCategory, getCategories,getDataBySlug} from '../../lib/api'
 import styles from '../../styles/pages/Item.module.sass'
+
+export async function generateMetadata({
+  params,
+}) {
+  const slug = decodeURI(params.slug.join('/'))
+  const itemInfo = await getDataBySlug(slug)
+  if (!post) {
+    return
+  }
+
+  return {
+    title: itemInfo[0]?.title,
+    description: itemInfo[0]?.metadata?.description,
+    openGraph: {
+      title: itemInfo[0]?.title,
+      description: itemInfo[0]?.metadata?.description,
+      siteName: "testy",
+      locale: 'vi_VN',
+      type: 'article',
+      publishedTime: 'publishedAt',
+      modifiedTime: 'modifiedAt',
+      url: './',
+      images: itemInfo[0]?.metadata?.image?.imgix_url,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: itemInfo[0]?.title,
+      description: "testy",
+      images: itemInfo[0]?.metadata?.image?.imgix_url,
+    },
+  }
+}
 
 const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
   const { onAdd, cartItems, cosmicUser } = useStateContext()
-
-  const [activeIndex, setActiveIndex] = useState(0)
+  console.log(itemInfo)
   const [visibleAuthModal, setVisibleAuthModal] = useState(false)
 
   const counts = itemInfo?.[0]?.metadata?.count
@@ -32,7 +58,7 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
   const [option, setOption] = useState(counts[0])
 
   const handleAddToCart = () => {
-    cosmicUser?.hasOwnProperty('id') ? handleCheckout() : handleOAuth()
+     handleCheckout()
   }
 
   const handleOAuth = useCallback(
@@ -46,30 +72,12 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
 
   const handleCheckout = async () => {
     const addCart = await onAdd(itemInfo[0], option)
-
-    if (addCart?.length) {
-      const stripe = await getStripe()
-
-      const response = await fetch('/api/stripe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(addCart),
-      })
-
-      if (response.statusCode === 500) return
-
-      const data = await response.json()
-      toast.loading('Redirecting...', {
-        position: 'bottom-right',
-      })
-
-      stripe.redirectToCheckout({ sessionId: data.id })
+    console.log(cartItems)
     }
-  }
+  
 
   return (
+    
     <Layout navigationPaths={navigationItems[0]?.metadata}>
       <div className={cn('section', styles.section)}>
         <div className={cn('container', styles.container)}>
@@ -93,42 +101,12 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
           </div>
           <div className={styles.details}>
             <h1 className={cn('h3', styles.title)}>{itemInfo[0]?.title}</h1>
-            <div className={styles.cost}>
-              <div className={cn('status-stroke-green', styles.price)}>
-                {`$${itemInfo[0]?.metadata?.price}`}
-              </div>
-              <div className={styles.counter}>
-                {itemInfo[0]?.metadata?.count > 0
-                  ? `${itemInfo[0]?.metadata?.count} in stock`
-                  : 'Not Available'}
-              </div>
-            </div>
+
             <div className={styles.info}>
               {itemInfo[0]?.metadata?.description}
             </div>
-            <div className={styles.nav}>
-              {itemInfo[0]?.metadata?.categories?.map((x, index) => (
-                <button
-                  className={cn(
-                    { [styles.active]: index === activeIndex },
-                    styles.link
-                  )}
-                  onClick={() => setActiveIndex(index)}
-                  key={index}
-                >
-                  {x?.title}
-                </button>
-              ))}
-            </div>
             <div className={styles.actions}>
-              <div className={styles.dropdown}>
-                <Dropdown
-                  className={styles.dropdown}
-                  value={option}
-                  setValue={setOption}
-                  options={counts}
-                />
-              </div>
+
               <div className={styles.btns}>
                 {
                   itemInfo[0]?.metadata?.price > 0 ? (
@@ -151,6 +129,7 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
             </div>
           </div>
         </div>
+        
         <HotBid classSection="section" info={categoriesGroup['groups'][0]} />
         <Discover
           info={categoriesGroup['groups']}
@@ -177,7 +156,7 @@ export async function getServerSideProps({ params }) {
   const itemInfo = await getDataBySlug(params.slug)
 
   const navigationItems = (await getAllDataByType('navigation')) || []
-  const categoryTypes = (await getAllDataByType('categories')) || []
+  const categoryTypes = (await getCategories()) || []
   const categoriesData = await Promise.all(
     categoryTypes?.map(category => {
       return getDataByCategory(category?.id)

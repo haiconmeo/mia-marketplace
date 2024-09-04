@@ -14,8 +14,7 @@ import styles from './Header.module.sass'
 const Headers = ({ navigation }) => {
   const [visibleNav, setVisibleNav] = useState(false)
   const [visibleAuthModal, setVisibleAuthModal] = useState(false)
-
-  const { cosmicUser, setCosmicUser } = useStateContext()
+  const { cosmicUser,cartItems, setCosmicUser } = useStateContext()
 
   const handleOAuth = useCallback(
     user => {
@@ -83,6 +82,15 @@ const Headers = ({ navigation }) => {
           >
             <Icon name="search" size="20" />
             Tìm kiếm
+          </AppLink>
+          <AppLink
+            aria-label="search"
+            aria-hidden="true"
+            className={cn('button-small', styles.button)}
+            href={`/search`}
+          >
+            <Icon name="search" size="20" />
+            cart {cartItems.length}
           </AppLink>
           <button
             aria-label="user-information"

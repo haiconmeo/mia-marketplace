@@ -1,13 +1,9 @@
 import { createBucketClient } from '@cosmicjs/sdk'
+import axios from 'axios';
 
-const cosmic = createBucketClient({
-  bucketSlug: process.env.NEXT_PUBLIC_COSMIC_BUCKET_SLUG,
-  readKey: process.env.NEXT_PUBLIC_COSMIC_READ_KEY,
-  writeKey: process.env.COSMIC_WRITE_KEY,
-})
 
 export default async function createHandler(
-  { body: { title, description, price, count, color, image, categories } },
+  { body: { title, description, price, count, color, image, category_id, link } },
   res
 ) {
   const metadata = {
@@ -15,18 +11,21 @@ export default async function createHandler(
     price: Number(price),
     count: Number(count),
     color,
-    image,
-    categories,
+    image: {imgix_url: `https://imgix.cosmicjs.com/${image}`, url: `https://cdn.cosmicjs.com/${image}`},
+    link: link
   }
+  console.log(metadata)
   try {
-    const data = await cosmic.objects.insertOne({
-      title: title,
-      type: 'products',
-      thumbnail: image,
+    const response = await axios.post('https://api.miart.asia/products', {
+      slug: title.toLowerCase().replace(/\s+/g, '-'), // Automatically generating a slug from the title
+      title,
       metadata,
+      category_id: category_id, // Assuming categories is the category_id
     })
-    res.status(200).json(data)
+
+    res.status(200).json(response.data)
   } catch (error) {
-    res.status(404).json(error.message)
+    console.log(error)
+    res.status(404).json({ message: error.response ? error.response.data.detail : error.message })
   }
 }

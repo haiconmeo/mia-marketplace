@@ -3,6 +3,7 @@ const createFields = {
   count: '',
   description: '',
   price: '',
+  link: ''
 }
 
 export default createFields

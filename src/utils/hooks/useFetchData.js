@@ -21,7 +21,7 @@ const useFetchData = (initialData = {}, method = 'GET') => {
 
       if (response.ok) {
         const result = await response.json()
-        setData(result['objects'])
+        setData(result)
       } else {
         setData(initialData)
         !hasError && setHasError(true)

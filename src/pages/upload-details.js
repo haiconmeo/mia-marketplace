@@ -7,9 +7,9 @@ import Layout from '../components/Layout'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
 import TextInput from '../components/TextInput'
+import TextArea from '../components/TextArea'
 import Loader from '../components/Loader'
-import Modal from '../components/Modal'
-import OAuth from '../components/OAuth'
+import {getCategories} from '../lib/api'
 import Preview from '../screens/UploadDetails/Preview'
 import Cards from '../screens/UploadDetails/Cards'
 import { getAllDataByType } from '../lib/cosmic'
@@ -29,7 +29,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
   const [uploadFile, setUploadFile] = useState('')
   const [chooseCategory, setChooseCategory] = useState('')
   const [fillFiledMessage, setFillFiledMessage] = useState(false)
-  const [{ title, count, description, price }, setFields] = useState(
+  const [{ title, count, description, price, link }, setFields] = useState(
     () => createFields
   )
 
@@ -68,21 +68,20 @@ const Upload = ({ navigationItems, categoriesType }) => {
   }
 
   const handleOAuth = useCallback(
-    async user => {
-      !cosmicUser.hasOwnProperty('id') && setVisibleAuthModal(true)
-
-      if (!user && !user?.hasOwnProperty('id')) return
-      user && uploadFile && (await handleUploadFile(uploadFile))
+    async () => {
+      if (uploadFile) {
+        await handleUploadFile(uploadFile)
+      }
     },
-    [cosmicUser, uploadFile]
+    [uploadFile]
   )
 
   const handleUpload = async e => {
     setUploadFile(e.target.files[0])
 
-    cosmicUser?.hasOwnProperty('id')
-      ? handleUploadFile(e.target.files[0])
-      : handleOAuth()
+ 
+    handleUploadFile(e.target.files[0])
+
   }
 
   const handleChange = ({ target: { name, value } }) =>
@@ -107,9 +106,8 @@ const Upload = ({ navigationItems, categoriesType }) => {
   const submitForm = useCallback(
     async e => {
       e.preventDefault()
-      !cosmicUser.hasOwnProperty('id') && handleOAuth()
-
-      if (cosmicUser && title && color && count && price && uploadMedia) {
+      console.log(title ,color, count ,price , uploadMedia)
+      if (title) {
         fillFiledMessage && setFillFiledMessage(false)
 
         const response = await fetch('/api/create', {
@@ -124,8 +122,9 @@ const Upload = ({ navigationItems, categoriesType }) => {
             price,
             count,
             color,
-            categories: [chooseCategory],
+            category_id: chooseCategory,
             image: uploadMedia['name'],
+            link,
           }),
         })
 
@@ -202,17 +201,17 @@ const Upload = ({ navigationItems, categoriesType }) => {
                   <div className={styles.fieldset}>
                     <TextInput
                       className={styles.field}
-                      label="Item title"
+                      label="Tên kinh"
                       name="title"
                       type="text"
-                      placeholder="e. g. Readable Title"
+                      placeholder="Địa tạng bổ nguyện kinh"
                       onChange={handleChange}
                       value={title}
                       required
                     />
-                    <TextInput
+                    <TextArea
                       className={styles.field}
-                      label="Description"
+                      label="mô tả"
                       name="description"
                       type="text"
                       placeholder="e. g. Description"
@@ -220,10 +219,20 @@ const Upload = ({ navigationItems, categoriesType }) => {
                       value={description}
                       required
                     />
+                    <TextInput
+                      className={styles.field}
+                      label="link tải kinh"
+                      name="link"
+                      type="text"
+                      placeholder="e. g. Readable Title"
+                      onChange={handleChange}
+                      value={link}
+                      required
+                    />
                     <div className={styles.row}>
                       <div className={styles.col}>
                         <div className={styles.field}>
-                          <div className={styles.label}>Colors</div>
+                          <div className={styles.label}>Tông phái</div>
                           <Dropdown
                             className={styles.dropdown}
                             value={color}
@@ -232,34 +241,14 @@ const Upload = ({ navigationItems, categoriesType }) => {
                           />
                         </div>
                       </div>
-                      <div className={styles.col}>
-                        <TextInput
-                          className={styles.field}
-                          label="Price"
-                          name="price"
-                          type="text"
-                          placeholder="e. g. Price"
-                          onChange={handleChange}
-                          value={price}
-                          required
-                        />
-                      </div>
-                      <div className={styles.col}>
-                        <TextInput
-                          className={styles.field}
-                          label="Count"
-                          name="count"
-                          type="text"
-                          placeholder="e. g. Count"
-                          onChange={handleChange}
-                          value={count}
-                          required
-                        />
-                      </div>
                     </div>
+
+                    
                   </div>
+                  
                 </div>
               </div>
+              
               <div className={styles.options}>
                 <div className={styles.category}>Choose collection</div>
                 <div className={styles.text}>Choose an exiting Categories</div>
@@ -303,18 +292,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
           />
         </div>
       </div>
-      <Modal
-        visible={visibleAuthModal}
-        disable={!cosmicUser?.hasOwnProperty('id')}
-        onClose={() => setVisibleAuthModal(false)}
-      >
-        <OAuth
-          className={styles.steps}
-          handleOAuth={handleOAuth}
-          handleClose={() => setVisibleAuthModal(false)}
-          disable={!cosmicUser?.hasOwnProperty('id')}
-        />
-      </Modal>
+
     </Layout>
   )
 }
@@ -323,7 +301,7 @@ export default Upload
 
 export async function getServerSideProps() {
   const navigationItems = (await getAllDataByType('navigation')) || []
-  const categoryTypes = (await getAllDataByType('categories')) || []
+  const categoryTypes = (await getCategories()) || []
 
   const categoriesType = categoryTypes?.reduce((arr, { title, id }) => {
     return { ...arr, [id]: title }

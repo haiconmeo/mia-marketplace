@@ -52,7 +52,7 @@ const settings = {
 const Discover = ({ info, type }) => {
   const { push } = useRouter()
   const { data: filterResult, fetchData } = useFetchData([])
-
+  console.log("ccccc",filterResult)
   const [activeIndex, setActiveIndex] = useState(
     type ? Object.entries(type)[0]?.[0] : ''
   )
@@ -85,7 +85,7 @@ const Discover = ({ info, type }) => {
         (acc, key) => acc + `&${key}=` + `${params[key]}`,
         ''
       )
-
+      console.log("aaaaaaaaaaaa")
       fetchData(`/api/filter?${filterParam}`)
     },
     [activeIndex, debouncedMinTerm, debouncedMaxTerm, fetchData, option]

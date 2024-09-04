@@ -28,15 +28,8 @@ const Preview = ({ className, onClose, info, image }) => {
                 <div className={styles.title}>{info?.title}</div>
                 <div className={styles.price}>${info?.price}</div>
               </div>
-              <div className={styles.line}>
-                <div className={styles.counter}>{info?.count} in stock</div>
-              </div>
             </div>
             <div className={styles.foot}>
-              <div className={styles.status}>
-                <Icon name="candlesticks-up" size="20" />
-                Price <span>{info?.price} $</span>
-              </div>
               <div className={styles.bid}>
                 New item
                 <span role="img" aria-label="fire">

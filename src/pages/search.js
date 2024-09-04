@@ -4,8 +4,8 @@ import { useRouter } from 'next/router'
 import { useStateContext } from '../utils/context/StateContext'
 import useDebounce from '../utils/hooks/useDebounce'
 import useFetchData from '../utils/hooks/useFetchData'
-import { getAllDataByType, getDataByCategory } from '../lib/cosmic'
-
+import { getAllDataByType } from '../lib/cosmic'
+import {getCategories,getDataByCategory} from '../lib/api'
 import Layout from '../components/Layout'
 import Icon from '../components/Icon'
 import Card from '../components/Card'
@@ -152,7 +152,7 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
           <div className={styles.row}>
             <div className={styles.filters}>
               <div className={styles.top}>
-                <div className={styles.title}>Search</div>
+                <div className={styles.title}>Tìm kiếm</div>
               </div>
               <div className={styles.form}>
                 <div className={styles.label}>Tìm kiếm</div>
@@ -175,19 +175,8 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
                   </button>
                 </form>
               </div>
-              <div className={styles.sorting}>
-                <div className={styles.dropdown}>
-                  <div className={styles.label}>Select color</div>
-                  <Dropdown
-                    className={styles.dropdown}
-                    value={option}
-                    setValue={getDataByFilterOptions}
-                    options={OPTIONS}
-                  />
-                </div>
-              </div>
               <div className={styles.range}>
-                <div className={styles.label}>Price range</div>
+                <div className={styles.label}>Giá</div>
                 <div className={styles.prices}>
                   <input
                     className={styles.input}
@@ -256,7 +245,7 @@ export default Search
 export async function getServerSideProps({ query }) {
   const navigationItems = (await getAllDataByType('navigation')) || []
 
-  const categoryTypes = (await getAllDataByType('categories')) || []
+  const categoryTypes = (await getCategories()) || []
   const categoriesData = await Promise.all(
     categoryTypes?.map(category => {
       return getDataByCategory(category?.id)

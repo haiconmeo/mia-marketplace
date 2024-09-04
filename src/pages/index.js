@@ -11,8 +11,8 @@ import {
   Description,
 } from '../screens/Home'
 import chooseBySlug from '../utils/chooseBySlug'
-import { getDataByCategory, getAllDataByType } from '../lib/cosmic'
-
+import {  getAllDataByType } from '../lib/cosmic'
+import {getCategories,getDataByCategory} from '../lib/api'
 const Home = ({
   reviews,
   landing,
@@ -75,7 +75,7 @@ export default Home
 export async function getServerSideProps() {
   const reviews = (await getAllDataByType('reviews')) || []
   const landing = (await getAllDataByType('landings')) || []
-  const categoryTypes = (await getAllDataByType('categories')) || []
+  const categoryTypes = (await getCategories()) || []
   const categoriesData = await Promise.all(
     categoryTypes?.map(category => {
       return getDataByCategory(category?.id)

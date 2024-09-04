@@ -19,38 +19,61 @@ export const StateContext = ({ children }) => {
     groups: [],
     types: {},
   })
+  useEffect(() => {
+    const storedCartItems = localStorage.getItem('cartItems');
+    const storedTotalPrice = localStorage.getItem('totalPrice');
+    const storedTotalQuantities = localStorage.getItem('totalQuantities');
 
+    if (storedCartItems) {
+      setCartItems(JSON.parse(storedCartItems));
+    }
+    if (storedTotalPrice) {
+      setTotalPrice(parseFloat(storedTotalPrice));
+    }
+    if (storedTotalQuantities) {
+      setTotalQuantities(parseInt(storedTotalQuantities));
+    }
+  }, []);
   const onCategoriesChange = useCallback(content => {
     setCategories(prevFields => ({ ...prevFields, ...content }))
   }, [])
 
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    localStorage.setItem('totalPrice', totalPrice.toString());
+    localStorage.setItem('totalQuantities', totalQuantities.toString());
+  }, [cartItems, totalPrice, totalQuantities]);
+
   const onAdd = (product, quantity) => {
-    const checkProductInCart = cartItems.find(item => item._id === product._id)
+    if (product) {
+      const checkProductInCart = cartItems.find(item => item?._id === product._id)
 
-    setTotalPrice(prevTotalPrice => prevTotalPrice + product.price * quantity)
-    setTotalQuantities(prevTotalQuantities => prevTotalQuantities + quantity)
-
-    toast.success(`${quantity} of ${product.title} added to the cart.`, {
-      position: 'bottom-right',
-    })
-
-    if (checkProductInCart) {
-      const updatedCartItems = cartItems.map(cartProduct => {
-        if (cartProduct.id === product.id)
-          return {
-            ...cartProduct,
-            quantity: cartProduct.quantity + quantity,
-          }
+      setTotalPrice(prevTotalPrice => prevTotalPrice + product.price * quantity)
+      setTotalQuantities(prevTotalQuantities => prevTotalQuantities + quantity)
+  
+      toast.success(`${quantity} of ${product.title} added to the cart.`, {
+        position: 'bottom-right',
       })
-
-      setCartItems(updatedCartItems)
-      return updatedCartItems
-    } else {
-      product.quantity = quantity
-
-      setCartItems([...cartItems, { ...product }])
-      return [...cartItems, { ...product }]
+  
+      if (checkProductInCart) {
+        const updatedCartItems = cartItems.map(cartProduct => {
+          if (cartProduct.id === product.id)
+            return {
+              ...cartProduct,
+              quantity: cartProduct.quantity + quantity,
+            }
+        })
+  
+        setCartItems(updatedCartItems)
+        return updatedCartItems
+      } else {
+        product.quantity = quantity
+  
+        setCartItems([...cartItems, { ...product }])
+        return [...cartItems, { ...product }]
+      }
     }
+
   }
 
   const onRemove = product => {
